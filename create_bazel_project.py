@@ -32,7 +32,7 @@ http_archive(
     name = "EmbeddedSystemsBuildScripts",
     type = "tar.gz",
     strip_prefix = "EmbeddedSystemsBuildScripts-0.5",
-    urls = ["https://github.com/es-uni-due/EmbeddedSystemsBuildScripts/archive/v0.5.tar.gz"],
+    urls = ["https://github.com/es-ude/EmbeddedSystemsBuildScripts/archive/v0.5.tar.gz"],
 	 sha256 = "6259c248d977f8e61f36347eedffcc63f580685dd13063da35be93fd27853440"
 )
 
