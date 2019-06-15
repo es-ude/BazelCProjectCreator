@@ -27,6 +27,7 @@ def create_bazel_project(project_root):
 )
 
 load("//:github.bzl", "es_github_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
@@ -93,6 +94,21 @@ default_embedded_binaries(
         ],
 )
 """)
+    create_file("app/main.c",
+    		"""#include <avr/io.h>
+#include <util/delay.h>
+#include <stdbool.h>
+
+int
+main(void)
+{
+  DDRD = _BV(5);
+  while (true)
+  {
+    _delay_ms(500);
+    PORTB ^= _BV(5);
+  }
+}""")
     create_package(name,
                    """cc_library(
    name = "HdrOnlyLib",
