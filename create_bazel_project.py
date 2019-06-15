@@ -26,13 +26,11 @@ def create_bazel_project(project_root):
     name = "{project_name}"
 )
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//:github.bzl", "es_github_archive")
 
-http_archive(
+es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    type = "tar.gz",
-    strip_prefix = "EmbeddedSystemsBuildScripts-0.5.1",
-    urls = ["https://github.com/es-ude/EmbeddedSystemsBuildScripts/archive/v0.5.1.tar.gz"],
+    version = "0.5.1",
     sha256 = "ac50d99d0798fc13cb9938087ade56700c74a58e60de32056c18f0669da985e3"
 )
 
@@ -45,7 +43,7 @@ http_archive(
     build_file = "@EmbeddedSystemsBuildScripts//:BUILD.Unity",
     strip_prefix = "Unity-master",
     urls = ["https://github.com/ThrowTheSwitch/Unity/archive/master.tar.gz"],
-	sha256 = "2757ff718ef4c507a7c294f62bfd8d63a780b9122840c9b28ca376784f3baa6e"
+    sha256 = "2757ff718ef4c507a7c294f62bfd8d63a780b9122840c9b28ca376784f3baa6e"
 )
 
 http_archive(
@@ -133,6 +131,24 @@ test_shouldFail(void)
 {
    TEST_FAIL();
 }
+""")
+    create_file("github.bzl",
+    		"""load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+URL = "https://github.com/es-ude/{repo}/archive/v{version}.tar.gz"
+
+def es_github_archive(name, version, repo = "",  **kwargs):
+  '''Convenient wrapper for embedded systems department
+     open source projects. It assumes version tags
+     are prefixed with the letter 'v'.'''
+  if repo == "":
+      repo = name
+  http_archive(
+    name = name,
+    strip_prefix = "{}-{}".format(name, version),
+    urls = [URL.format(repo = repo, version = version)],
+    **kwargs
+  )
 """)
 
     create_file(".bazelrc",
@@ -359,6 +375,16 @@ Run
  $ bazel query //...
 from the new project's root directory
 to see a list of available targets.
+
+To build local documentation
+install
+  * Sphinx
+  * breathe (plugin for sphinx)
+  * doxygen
+
+and Run
+ $ sphinx -T -b html docs/ docs/_build
+to create the documentation in the folder docs/_build
 """)
 
 
