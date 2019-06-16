@@ -31,8 +31,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    version = "0.5.1",
-    sha256 = "ac50d99d0798fc13cb9938087ade56700c74a58e60de32056c18f0669da985e3"
+    version = "0.5.2",
+   # sha256 = "<checksum>"
 )
 
 load("@EmbeddedSystemsBuildScripts//AvrToolchain:avr.bzl", "avr_toolchain")
