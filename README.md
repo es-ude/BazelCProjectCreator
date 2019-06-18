@@ -38,6 +38,8 @@ parts as follows
     applications.
   * tests: unit tests go into the `test` folder
 
+### Applications
+
 All files in `app/` are expected to be `*.c` files
 containing a `main` function. Each file will
 correspond to a buildable `cc_binary` target.
@@ -55,7 +57,28 @@ by running
 ```
 $ bazel query 'kind(platform, @AvrToolchain//platforms:*)'
 ```
-or define your own platform (see [here](https://embeddedsystemsbuildscripts.readthedocs.io/en/latest/Platforms.html)
+or define your own platform (see [here](https://embeddedsystemsbuildscripts.readthedocs.io/en/latest/Platforms.html))
+
+### Documentation
+To help you getting started with the documentation for your new project,
+we include setup files for [Sphinx](http://www.sphinx-doc.org/en/master/).
+The documentation files are written using reStructuredText.
+For an overview of the markup we recommend the [reStructuredText Primer](http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html).
+
+To allow including information from doxygen comments in your header files we
+use the [breathe plugin](https://breathe.readthedocs.io/en/latest/).
+E.g. use
+```
+... doxygenfile: YourHeader.h
+```
+to include the doxygen output of `YourHeader.h` into your documentation.
+More available commands can be found at https://breathe.readthedocs.io/en/latest/directives.html.
+
+To build the documentation run
+```
+$ sphinx-build -T -b html docs docs/_build
+```
+from your workspace root. The output can then be found at `docs/_build/`.
 
 ### Prerequisites
 
