@@ -5,7 +5,7 @@ A python3 script that realizes easy creation of bazel projects
 for embedded c. Run
 ```
 $ wget https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/create_bazel_project.py \
-  && chmod +x && ./create_bazel_project.py path/to/my/Project
+  && chmod +x ./create_bazel_project.py && ./create_bazel_project.py path/to/my/Project
 ```
 to create a new project.
 For more information on the Bazel Build Tool see https://bazel.build.
