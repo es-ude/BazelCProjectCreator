@@ -4,25 +4,8 @@ import os
 import os.path
 import sys
 
-def create_bazel_project(project_root):
-    name = os.path.basename(project_root)
-
-    def create_file(path, content):
-        full_path = os.path.abspath(os.path.join(project_root, path))
-        print(full_path)
-        dir = os.path.dirname(full_path)
-        if os.path.isfile(full_path):
-            raise FileExistsError(full_path)
-        os.makedirs(dir, exist_ok=True)
-        with open(full_path, 'w') as file:
-            file.write(content)
-
-    def create_package(path, build_file_content):
-        build_file_path = os.path.join(path, "BUILD.bazel")
-        create_file(build_file_path, build_file_content)
-
-    create_file("WORKSPACE",
-                """workspace(
+def create_workspace_content(project_name, use_comm_lib = False):
+  content = """workspace(
     name = "{project_name}"
 )
 
@@ -61,13 +44,52 @@ http_archive(
     urls = ["https://github.com/ThrowTheSwitch/CMock/archive/master.tar.gz"],
 )
 
-#http_archive(
-#    name = "LUFA",
-#    build_file = "@EmbeddedSystemsBuildScripts//:BUILD.LUFA",
-#    strip_prefix = "lufa-LUFA-170418",
-#    urls = ["http://fourwalledcubicle.com/files/LUFA/LUFA-170418.zip"],
-#)
-""".format(project_name=name))
+http_archive(
+    name = "LUFA",
+    build_file = "@EmbeddedSystemsBuildScripts//:BUILD.LUFA",
+    strip_prefix = "lufa-LUFA-170418",
+    urls = ["http://fourwalledcubicle.com/files/LUFA/LUFA-170418.zip"],
+)
+""".format(project_name=project_name)
+  if use_comm_lib:
+      content += """
+es_github_archive(
+    name = "CommunicationModule",
+    repo = "CommunicationLibrary",
+    version = "0.1.5"
+)
+
+es_github_archive(
+    name = "PeripheralInterface",
+    version = "0.6"
+)
+
+es_github_archive(
+    name = "EmbeddedUtilities",
+    repo = "EmbeddedUtil",
+    version = "0.3"
+)
+"""
+
+def create_bazel_project(project_root):
+    name = os.path.basename(project_root)
+
+    def create_file(path, content):
+        full_path = os.path.abspath(os.path.join(project_root, path))
+        print(full_path)
+        dir = os.path.dirname(full_path)
+        if os.path.isfile(full_path):
+            raise FileExistsError(full_path)
+        os.makedirs(dir, exist_ok=True)
+        with open(full_path, 'w') as file:
+            file.write(content)
+
+    def create_package(path, build_file_content):
+        build_file_path = os.path.join(path, "BUILD.bazel")
+        create_file(build_file_path, build_file_content)
+
+    create_file("WORKSPACE",
+)
 
     create_package("app/setup",
                    """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
@@ -346,8 +368,8 @@ latex_elements = {{
 # --- Breathe ----
 
 
-breathe_projects = {{"EmbeddedUtil": "xml/"}}
-breathe_default_project = "EmbeddedUtil"
+breathe_projects = {{"{project}": "xml/"}}
+breathe_default_project = "{project}"
 
 # -- Options for Epub output -------------------------------------------------
 
