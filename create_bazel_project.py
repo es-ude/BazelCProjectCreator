@@ -89,7 +89,7 @@ def create_bazel_project(project_root):
         create_file(build_file_path, build_file_content)
 
     create_file("WORKSPACE",
-)
+    	create_workspace_content(name))
 
     create_package("app/setup",
                    """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
