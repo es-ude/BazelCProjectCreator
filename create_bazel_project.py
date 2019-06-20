@@ -70,6 +70,8 @@ es_github_archive(
     version = "0.3"
 )
 """
+  return content
+
 
 def create_bazel_project(project_root):
     name = os.path.basename(project_root)
