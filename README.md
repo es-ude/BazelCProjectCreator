@@ -4,10 +4,12 @@ Bazel Project Creator
 A python3 script that realizes easy creation of bazel projects
 for embedded c. Run
 ```
-$ wget https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/create_bazel_project.py \
-  && chmod +x ./create_bazel_project.py && ./create_bazel_project.py path/to/my/Project
+$ curl https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/create_bazel_project.py \
+  | python - MyProject
 ```
-to create a new project.
+to create a the new project `MyProject`.
+If the folder `MyProject` already contains files, the script will fail,
+to prevent accidentally overwriting files.
 For more information on the Bazel Build Tool see https://bazel.build.
 For more information on the Bazel Scripts used in the created project see https://embeddedsystemsbuildscripts.readthedocs.io/en/latest/.
 
