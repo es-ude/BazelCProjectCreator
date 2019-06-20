@@ -90,6 +90,13 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
+    def create_folder(path):
+        full_path = os.path.abspath(os.path.join(project_root, path))
+        print(full_path)
+        dir = os.path.dirname(full_path)
+        os.makedirs(dir, exist_ok=True)
+
+
     create_file("WORKSPACE",
     	create_workspace_content(name))
 
@@ -114,10 +121,12 @@ default_embedded_binaries(
     copts = cpu_frequency_flag(),
     deps = [
         "//app/setup:Setup",
-        "//:Library"
+        "//:Library",
+        "//{}:HdrOnlyLib",
         ],
 )
-""")
+""".format(name))
+
     create_file("app/main.c",
     		"""#include <avr/io.h>
 #include <util/delay.h>
@@ -142,15 +151,20 @@ main(void)
 """)
 
     create_package("",
-                   """cc_library(
+                   """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
+
+cc_library(
     name = "Library",
     srcs = glob(["src/**/*.c", "src/**/*.h"]),
+    copts = cpu_frequency_flag(),
     visibility = ["//visibility:public"],
     deps = [
         "//{}:HdrOnlyLib"
     ]
 )
 """.format(name))
+
+    create_folder("src")
 
     create_package("test",
                    """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
@@ -160,9 +174,11 @@ generate_a_unity_test_for_every_file(
     file_list = glob(["*_Test.c"]),
     deps = [
         "//:Library",
+        "//{}:HdrOnlyLib",
     ],
 )
-""")
+""".format(name))
+
     create_file("test/first_Test.c",
                 """#include "unity.h"
 
