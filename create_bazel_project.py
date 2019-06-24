@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import os.path
@@ -429,7 +429,10 @@ to create the documentation in the folder docs/_build
 
 
 def main():
-    create_bazel_project(sys.argv[1])
+    if len(sys.argv) < 2:
+         print("usage: ./create_bazel_project.py PROJECT_NAME")
+    else:
+         create_bazel_project(sys.argv[1])
 
 
 if __name__ == "__main__":
