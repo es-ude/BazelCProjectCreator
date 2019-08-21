@@ -27,7 +27,6 @@ http_archive(
     build_file = "@EmbeddedSystemsBuildScripts//:BUILD.Unity",
     strip_prefix = "Unity-master",
     urls = ["https://github.com/ThrowTheSwitch/Unity/archive/master.tar.gz"],
-    sha256 = "2757ff718ef4c507a7c294f62bfd8d63a780b9122840c9b28ca376784f3baa6e"
 )
 
 http_archive(
