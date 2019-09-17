@@ -7,6 +7,11 @@ for embedded c. Run
 $ curl https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/create_bazel_project.py \
   | python - MyProject
 ```
+or for systems mainly using python2 you need to explicitly choose python3 with 
+```
+$ curl https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/create_bazel_project.py \
+  | python3 - MyProject
+```
 to create a the new project `MyProject`.
 If the folder `MyProject` already contains files, the script will fail,
 to prevent accidentally overwriting files.
