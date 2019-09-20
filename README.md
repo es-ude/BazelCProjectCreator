@@ -13,6 +13,9 @@ $ curl https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/crea
   | python3 - MyProject
 ```
 to create a the new project `MyProject`.
+
+**Please note that** the project name must not contain dashes, dots or spaces since the bazel synchronization will fail in that case. 
+
 If the folder `MyProject` already contains files, the script will fail,
 to prevent accidentally overwriting files.
 For more information on the Bazel Build Tool see https://bazel.build.
