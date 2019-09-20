@@ -161,7 +161,7 @@ cc_library(
 )
 """.format(name))
 
-    create_folder("src")
+    create_file("src/.gitkeep","")
 
     create_package("test",
                    """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
