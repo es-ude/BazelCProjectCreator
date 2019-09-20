@@ -435,13 +435,19 @@ and Run
 to create the documentation in the folder docs/_build
 """)
 
+def replace_illegal_characters(project_name):
+    illegal_characters = [".", " ", "-"]
+    new_character = "_"
+    for illegal_character in illegal_characters:
+        project_name = project_name.replace(illegal_character, new_character)
+    return project_name
 
 def main():
     if len(sys.argv) < 2:
          print("usage: ./create_bazel_project.py PROJECT_NAME")
     else:
-         create_bazel_project(sys.argv[1])
-
+        name = replace_illegal_characters(sys.argv[1])
+        create_bazel_project(name)
 
 if __name__ == "__main__":
     main()
