@@ -14,7 +14,7 @@ $ curl https://raw.githubusercontent.com/es-ude/BazelCProjectCreator/master/crea
 ```
 to create a the new project `MyProject`.
 
-**Please note that** the project name must not contain dashes, dots or spaces since the bazel synchronization will fail in that case. Illegal characters will be replaced by an underscore. 
+**Please note that** the project name must not contain dashes, dots or spaces since the bazel synchronization will fail in that case. Illegal characters will be replaced by an underscore. For more information about workspace names klick [here](https://docs.bazel.build/versions/master/be/functions.html#workspace).
 
 If the folder `MyProject` already contains files, the script will fail,
 to prevent accidentally overwriting files.
