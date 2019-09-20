@@ -89,11 +89,6 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    def create_folder(path):
-        full_path = os.path.abspath(os.path.join(project_root, path))
-        print(full_path)
-        os.makedirs(full_path, exist_ok=True)
-
     create_file("WORKSPACE",
     	create_workspace_content(name))
 
