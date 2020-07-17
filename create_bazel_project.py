@@ -14,7 +14,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    version = "0.6",
+    version = "0.6.2",
    # sha256 = "<checksum>"
 )
 
@@ -47,7 +47,7 @@ http_archive(
     name = "LUFA",
     build_file = "@EmbeddedSystemsBuildScripts//:BUILD.LUFA",
     strip_prefix = "lufa-LUFA-170418",
-    urls = ["http://fourwalledcubicle.com/files/LUFA/LUFA-170418.zip"],
+    urls = ["https://fourwalledcubicle.com/files/LUFA/LUFA-170418.zip"],
 )
 """.format(project_name=project_name)
   if use_comm_lib:
@@ -127,7 +127,7 @@ default_embedded_binaries(
 int
 main(void)
 {
-  DDRD = _BV(5);
+  DDRB = _BV(5);
   while (true)
   {
     _delay_ms(500);
