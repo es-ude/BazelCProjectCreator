@@ -3,7 +3,6 @@
 import os
 import os.path
 import sys
-import requests
 
 def create_workspace_content(project_name, use_comm_lib = False):
   content = """workspace(
@@ -90,11 +89,16 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    i = input("Do you want to create a project for the elastic node middleware? (y/n) (default: n) ")
-    if i == "y" or i == "yes":
-	### Change to master branch 
+    inp = input("Do you want to create a project for the elastic node middleware? (y/n) (default: n) ")
+    if inp == "y" or inp == "yes":
+        try:
+            import requests
+        except:
+            print("You need to install requests: pip install requests")
+            exit()
+        ### Change to master branch
         create_file("init.py",requests.get("https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/init.py").text.replace("projectName",name))
-
+    
     create_file("WORKSPACE",
     	create_workspace_content(name))
 
