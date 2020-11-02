@@ -4,8 +4,9 @@ import os
 import os.path
 import sys
 
-def create_workspace_content(project_name, use_comm_lib = False):
-  content = """workspace(
+
+def create_workspace_content(project_name, use_comm_lib=False):
+    content = """workspace(
     name = "{project_name}"
 )
 
@@ -14,11 +15,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    version = "0.6.2",
+    version = "1.0",
    # sha256 = "<checksum>"
 )
 
-load("@EmbeddedSystemsBuildScripts//AvrToolchain:avr.bzl", "avr_toolchain")
+load("@EmbeddedSystemsBuildScripts//Toolchains/Avr:avr.bzl", "avr_toolchain")
 
 avr_toolchain()
 
@@ -49,9 +50,11 @@ http_archive(
     strip_prefix = "lufa-LUFA-170418",
     urls = ["https://fourwalledcubicle.com/files/LUFA/LUFA-170418.zip"],
 )
-""".format(project_name=project_name)
-  if use_comm_lib:
-      content += """
+""".format(
+        project_name=project_name
+    )
+    if use_comm_lib:
+        content += """
 es_github_archive(
     name = "CommunicationModule",
     repo = "CommunicationLibrary",
@@ -69,7 +72,7 @@ es_github_archive(
     version = "0.3"
 )
 """
-  return content
+    return content
 
 
 def create_bazel_project(project_root):
@@ -82,18 +85,18 @@ def create_bazel_project(project_root):
         if os.path.isfile(full_path):
             raise FileExistsError(full_path)
         os.makedirs(dir, exist_ok=True)
-        with open(full_path, 'w') as file:
+        with open(full_path, "w") as file:
             file.write(content)
 
     def create_package(path, build_file_content):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    create_file("WORKSPACE",
-    	create_workspace_content(name))
+    create_file("WORKSPACE", create_workspace_content(name))
 
-    create_package("app/setup",
-                   """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
+    create_package(
+        "app/setup",
+        """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 cc_library(
     name = "Setup",
@@ -102,10 +105,12 @@ cc_library(
     deps = ["//:Library"],
     visibility = ["//visibility:public"],
 )
-""")
+""",
+    )
 
-    create_package("app",
-                   """load("@AvrToolchain//:helpers.bzl", "default_embedded_binaries")
+    create_package(
+        "app",
+        """load("@AvrToolchain//:helpers.bzl", "default_embedded_binaries")
 load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 default_embedded_binaries(
@@ -117,10 +122,14 @@ default_embedded_binaries(
         "//{}:HdrOnlyLib",
         ],
 )
-""".format(name))
+""".format(
+            name
+        ),
+    )
 
-    create_file("app/main.c",
-    		"""#include <avr/io.h>
+    create_file(
+        "app/main.c",
+        """#include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
 
@@ -133,17 +142,21 @@ main(void)
     _delay_ms(500);
     PORTB ^= _BV(5);
   }
-}""")
-    create_package(name,
-                   """cc_library(
+}""",
+    )
+    create_package(
+        name,
+        """cc_library(
    name = "HdrOnlyLib",
    hdrs = glob(["**/*.h"]),
    visibility = ["//visibility:public"],
 )
-""")
+""",
+    )
 
-    create_package("",
-                   """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
+    create_package(
+        "",
+        """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 cc_library(
     name = "Library",
@@ -154,12 +167,16 @@ cc_library(
         "//{}:HdrOnlyLib"
     ]
 )
-""".format(name))
+""".format(
+            name
+        ),
+    )
 
-    create_file("src/.gitkeep","")
+    create_file("src/.gitkeep", "")
 
-    create_package("test",
-                   """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
+    create_package(
+        "test",
+        """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
 
 generate_a_unity_test_for_every_file(
     cexception = False,
@@ -169,19 +186,25 @@ generate_a_unity_test_for_every_file(
         "//{}:HdrOnlyLib",
     ],
 )
-""".format(name))
+""".format(
+            name
+        ),
+    )
 
-    create_file("test/first_Test.c",
-                """#include "unity.h"
+    create_file(
+        "test/first_Test.c",
+        """#include "unity.h"
 
 void 
 test_shouldFail(void)
 {
    TEST_FAIL();
 }
-""")
-    create_file("github.bzl",
-    		"""load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+""",
+    )
+    create_file(
+        "github.bzl",
+        """load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 URL = "https://github.com/es-ude/{repo}/archive/v{version}.tar.gz"
 
@@ -197,21 +220,27 @@ def es_github_archive(name, version, repo = "",  **kwargs):
     urls = [URL.format(repo = repo, version = version)],
     **kwargs
   )
-""")
+""",
+    )
 
-    create_file(".bazelrc",
-                """test --test_output=errors
+    create_file(
+        ".bazelrc",
+        """test --test_output=errors
 build --incompatible_enable_cc_toolchain_resolution=true
 try-import user.bazelrc
-""")
-    create_file(".gitignore",
-	            """.vscode/
+""",
+    )
+    create_file(
+        ".gitignore",
+        """.vscode/
 .clwb/
 bazel-*
 user.bazelrc
-""")
-    create_file("docs/conf.py",
-       """
+""",
+    )
+    create_file(
+        "docs/conf.py",
+        """
 # -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
@@ -405,20 +434,30 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {{'https://docs.python.org/': None}}
-""".format(project = name))
-    create_file("docs/requirements.txt",
-    """Sphinx >= 2.0
+""".format(
+            project=name
+        ),
+    )
+    create_file(
+        "docs/requirements.txt",
+        """Sphinx >= 2.0
 breathe
-""")
-    create_file("docs/doxy.conf",
-	"""INPUT = ../{headers}/
+""",
+    )
+    create_file(
+        "docs/doxy.conf",
+        """INPUT = ../{headers}/
 GENERATE_XML = YES
 GENERATE_LATEX = NO
 GENERATE_HTML = NO
 XML_OUTPUT = @@OUTPUT_DIRECTORY@@/xml
-""".format(headers = name))
+""".format(
+            headers=name
+        ),
+    )
     create_file("docs/index.rst", "**{}**".format(name))
-    print("""
+    print(
+        """
 Run
  $ bazel query //...
 from the new project's root directory
@@ -433,7 +472,9 @@ install
 and Run
  $ sphinx -T -b html docs/ docs/_build
 to create the documentation in the folder docs/_build
-""")
+"""
+    )
+
 
 def replace_illegal_characters(project_name):
     illegal_characters = [".", " ", "-"]
@@ -442,12 +483,14 @@ def replace_illegal_characters(project_name):
         project_name = project_name.replace(illegal_character, new_character)
     return project_name
 
+
 def main():
     if len(sys.argv) < 2:
-         print("usage: ./create_bazel_project.py PROJECT_NAME")
+        print("usage: ./create_bazel_project.py PROJECT_NAME")
     else:
         name = replace_illegal_characters(sys.argv[1])
         create_bazel_project(name)
+
 
 if __name__ == "__main__":
     main()
