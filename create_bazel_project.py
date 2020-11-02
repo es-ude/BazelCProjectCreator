@@ -89,8 +89,7 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    inp = input("Do you want to create a project for the elastic node middleware? (y/n) (default: n) ")
-    if inp == "y" or inp == "yes":
+    def create_elasticNodeMiddlewareInit():
         try:
             import requests
         except:
@@ -98,7 +97,10 @@ def create_bazel_project(project_root):
             exit()
         ### Change to master branch
         create_file("init.py",requests.get("https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/init.py").text.replace("projectName",name))
-    
+	
+    if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
+        create_elasticNodeMiddlewareInit()	
+        
     create_file("WORKSPACE",
     	create_workspace_content(name))
 
