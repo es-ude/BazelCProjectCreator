@@ -4,6 +4,10 @@ import os
 import os.path
 import sys
 
+elasticNodeMiddleware = False
+if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
+    elasticNodeMiddleware = True
+
 def create_workspace_content(project_name, use_comm_lib = False):
   content = """workspace(
     name = "{project_name}"
@@ -89,20 +93,32 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    def create_elasticNodeMiddlewareInit():
+    def create_elasticNodeMiddlewareFiles():
+        print("Creating files for an Elastic Node Middleware Project.")
         try:
             import requests
         except:
             print("You need to install requests: pip install requests")
             exit()
+
+        path = sys.argv[1]+"/"
+        os.mkdir(path+"bitfiles")
         ### Change to master branch
-        create_file("init.py",requests.get("https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/init.py").text.replace("projectName",name))
-	
-    if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
-        create_elasticNodeMiddlewareInit()	
-        
-    create_file("WORKSPACE",
-    	create_workspace_content(name))
+        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/"
+        create_file("init.py",requests.get(link+"init.py").text)
+        create_file("app/blinkExample.py",requests.get(link+"blinkExample.py").text)
+        create_file("app/BUILD.bazel",requests.get(link+"appBUILD.bazel").text)
+        create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("projectName",name))
+        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("projectName",name))
+        create_file("app/main.py",requests.get(link+"main.py").text) 
+        create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
+        create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/bitfiles/bitfile.bit"))
+        create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
+
+
+    if not elasticNodeMiddleware:    
+        create_file("WORKSPACE",
+            create_workspace_content(name))
 
     create_package("app/setup",
                    """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
@@ -116,7 +132,8 @@ cc_library(
 )
 """)
 
-    create_package("app",
+    if not elasticNodeMiddleware:
+        create_package("app",
                    """load("@AvrToolchain//:helpers.bzl", "default_embedded_binaries")
 load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
@@ -131,8 +148,9 @@ default_embedded_binaries(
 )
 """.format(name))
 
-    create_file("app/main.c",
-    		"""#include <avr/io.h>
+    if not elasticNodeMiddleware:
+        create_file("app/main.c",
+            """#include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
 
@@ -153,8 +171,8 @@ main(void)
    visibility = ["//visibility:public"],
 )
 """)
-
-    create_package("",
+    if not elasticNodeMiddleware:
+        create_package("",
                    """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 cc_library(
@@ -186,14 +204,14 @@ generate_a_unity_test_for_every_file(
     create_file("test/first_Test.c",
                 """#include "unity.h"
 
-void 
+void
 test_shouldFail(void)
 {
    TEST_FAIL();
 }
 """)
     create_file("github.bzl",
-    		"""load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+            """load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 URL = "https://github.com/es-ude/{repo}/archive/v{version}.tar.gz"
 
@@ -217,7 +235,7 @@ build --incompatible_enable_cc_toolchain_resolution=true
 try-import user.bazelrc
 """)
     create_file(".gitignore",
-	            """.vscode/
+                """.vscode/
 .clwb/
 bazel-*
 user.bazelrc
@@ -299,9 +317,9 @@ release = 'v0.3'
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
-#	'sphinx.ext.pngmath',
-	'sphinx.ext.todo',
-	'breathe'
+#    'sphinx.ext.pngmath',
+    'sphinx.ext.todo',
+    'breathe'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -423,13 +441,17 @@ intersphinx_mapping = {{'https://docs.python.org/': None}}
 breathe
 """)
     create_file("docs/doxy.conf",
-	"""INPUT = ../{headers}/
+    """INPUT = ../{headers}/
 GENERATE_XML = YES
 GENERATE_LATEX = NO
 GENERATE_HTML = NO
 XML_OUTPUT = @@OUTPUT_DIRECTORY@@/xml
 """.format(headers = name))
     create_file("docs/index.rst", "**{}**".format(name))
+    
+    if elasticNodeMiddleware:
+        create_elasticNodeMiddlewareFiles()
+
     print("""
 Run
  $ bazel query //...
