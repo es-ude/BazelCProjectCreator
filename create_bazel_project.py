@@ -5,7 +5,7 @@ import os.path
 import sys
 
 elasticNodeMiddleware = False
-if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
+if len(sys.argv) >= 3 and str(sys.argv[2]) == "NodeMiddlewareProject":
     elasticNodeMiddleware = True
 
 def create_workspace_content(project_name, use_comm_lib = False):
@@ -18,11 +18,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    version = "0.6.2",
+    version = "1.0",
    # sha256 = "<checksum>"
 )
 
-load("@EmbeddedSystemsBuildScripts//AvrToolchain:avr.bzl", "avr_toolchain")
+load("@EmbeddedSystemsBuildScripts//Toolchains/Avr:avr.bzl", "avr_toolchain")
 
 avr_toolchain()
 
@@ -59,18 +59,18 @@ http_archive(
 es_github_archive(
     name = "CommunicationModule",
     repo = "CommunicationLibrary",
-    version = "0.1.5"
+    version = "0.1.7"
 )
 
 es_github_archive(
     name = "PeripheralInterface",
-    version = "0.6"
+    version = "0.7.1"
 )
 
 es_github_archive(
     name = "EmbeddedUtilities",
     repo = "EmbeddedUtil",
-    version = "0.3"
+    version = "0.3.1"
 )
 """
   return content
@@ -106,11 +106,11 @@ def create_bazel_project(project_root):
         ### Change to master branch
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/"
         create_file("init.py",requests.get(link+"init.py").text)
-        create_file("app/blinkExample.py",requests.get(link+"blinkExample.py").text)
+        create_file("app/blinkExample.c",requests.get(link+"blinkExample.c").text)
         create_file("app/BUILD.bazel",requests.get(link+"appBUILD.bazel").text)
         create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("projectName",name))
         create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("projectName",name))
-        create_file("app/main.py",requests.get(link+"main.py").text) 
+        create_file("app/main.c",requests.get(link+"main.c").text) 
         create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
         create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/bitfiles/bitfile.bit"))
         create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
