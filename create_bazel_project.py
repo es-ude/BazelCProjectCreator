@@ -5,7 +5,7 @@ import os.path
 import sys
 
 elasticNodeMiddleware = False
-if len(sys.argv) >= 3 and str(sys.argv[2]) == "NodeMiddlewareProject":
+if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
     elasticNodeMiddleware = True
 
 def create_workspace_content(project_name, use_comm_lib = False):
@@ -108,13 +108,13 @@ def create_bazel_project(project_root):
         create_file("init.py",requests.get(link+"init.py").text)
         create_file("app/blinkExample.c",requests.get(link+"blinkExample.c").text)
         create_file("app/BUILD.bazel",requests.get(link+"appBUILD.bazel").text)
-        create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("projectName",name))
-        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("projectName",name))
+        create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("MyProject",name))
+        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("MyProject",name))
         create_file("app/main.c",requests.get(link+"main.c").text) 
         create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
         create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/bitfiles/bitfile.bit"))
         create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
-
+        create_file("user.bazelrc", "run -- /dev/ttyACM0")
 
     if not elasticNodeMiddleware:    
         create_file("WORKSPACE",
