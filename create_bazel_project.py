@@ -116,7 +116,7 @@ def create_bazel_project(project_root):
         create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("MyProject",name))
         create_file("app/main.c",requests.get(link+"main.c").text) 
         create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
-        create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/bitfiles/bitfile.bit"))
+        create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/"+name+"/bitfiles/bitfile.bit"))
         create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
         create_file("user.bazelrc", "run -- /dev/ttyACM0")
 
