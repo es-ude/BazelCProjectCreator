@@ -107,18 +107,33 @@ def create_bazel_project(project_root):
 
         path = sys.argv[1]+"/"
         os.mkdir(path+"bitfiles")
-        ### Change to master branch
-        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/"
-        create_file("init.py",requests.get(link+"init.py").text)
-        create_file("app/blinkExample.c",requests.get(link+"blinkExample.c").text)
-        create_file("app/BUILD.bazel",requests.get(link+"appBUILD.bazel").text)
-        create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("MyProject",name))
-        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("MyProject",name))
-        create_file("app/main.c",requests.get(link+"main.c").text) 
-        create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
-        create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/"+name+"/bitfiles/bitfile.bit"))
-        create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
+        path = sys.argv[1]+"/"
+        os.mkdir(path+"bitfiles")
+
+        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
+        templates = link + "templates/"
+
+        create_file("init.py",requests.get(templates+"init.py").text)
         create_file("user.bazelrc", "run -- /dev/ttyACM0")
+        create_file("BUILD.bazel",requests.get(templates+"BUILD.bazel").text.replace("MyProject",name))
+        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("elasticnodemiddleware",name) + 
+"""
+
+es_github_archive(
+    name = "ElasticNodeMiddleware",
+    version = "1.1"
+)""")
+
+        create_file("app/BUILD.bazel",requests.get(templates+"appBUILD.bazel").text)
+        create_file("app/examples/BUILD.bazel",requests.get(templates+"appExamplesBUILD.bazel").text)
+
+        create_file("app/main.c",requests.get(templates+"main.c").text)
+        create_file("app/examples/blinkExample.c",requests.get(link+"app/blinkExample.c").text)
+        create_file("app/examples/blinkLufaExample.c",requests.get(link+"app/blinkLufaExample.c").text)
+
+        create_file("uploadScripts/portConfigs.py",requests.get(templates+"portConfigs.py").text)
+        create_file("uploadScripts/bitfileConfigs.py",requests.get(templates+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/"+name+"/bitfiles/bitfile.bit"))
+        create_file("uploadScripts/uploadBitfiles.py",requests.get(templates+"uploadBitfiles.py").text)
 
     if not elasticNodeMiddleware:    
         create_file("WORKSPACE", create_workspace_content(name))
