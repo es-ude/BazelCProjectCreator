@@ -5,6 +5,10 @@ import os.path
 import sys
 
 
+elasticNodeMiddleware = False
+if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
+    elasticNodeMiddleware = True
+
 def create_workspace_content(project_name, use_comm_lib=False):
     content = """workspace(
     name = "{project_name}"
@@ -58,18 +62,18 @@ http_archive(
 es_github_archive(
     name = "CommunicationModule",
     repo = "CommunicationLibrary",
-    version = "0.1.5"
+    version = "0.1.7"
 )
 
 es_github_archive(
     name = "PeripheralInterface",
-    version = "0.6"
+    version = "0.7.1"
 )
 
 es_github_archive(
     name = "EmbeddedUtilities",
     repo = "EmbeddedUtil",
-    version = "0.3"
+    version = "0.3.1"
 )
 """
     return content
@@ -92,7 +96,32 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-    create_file("WORKSPACE", create_workspace_content(name))
+
+    def create_elasticNodeMiddlewareFiles():
+        print("Creating files for an Elastic Node Middleware Project.")
+        try:
+            import requests
+        except:
+            print("You need to install requests: pip install requests")
+            exit()
+
+        path = sys.argv[1]+"/"
+        os.mkdir(path+"bitfiles")
+        ### Change to master branch
+        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/ownProgramInit/templates/"
+        create_file("init.py",requests.get(link+"init.py").text)
+        create_file("app/blinkExample.c",requests.get(link+"blinkExample.c").text)
+        create_file("app/BUILD.bazel",requests.get(link+"appBUILD.bazel").text)
+        create_file("BUILD.bazel",requests.get(link+"BUILD.bazel").text.replace("MyProject",name))
+        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("MyProject",name))
+        create_file("app/main.c",requests.get(link+"main.c").text) 
+        create_file("uploadScripts/portConfigs.py",requests.get(link+"portConfigs.py").text)
+        create_file("uploadScripts/bitfileConfigs.py",requests.get(link+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/"+name+"/bitfiles/bitfile.bit"))
+        create_file("uploadScripts/uploadBitfiles.py",requests.get(link+"uploadBitfiles.py").text)
+        create_file("user.bazelrc", "run -- /dev/ttyACM0")
+
+    if not elasticNodeMiddleware:    
+        create_file("WORKSPACE", create_workspace_content(name))
 
     create_package(
         "app/setup",
@@ -108,9 +137,11 @@ cc_library(
 """,
     )
 
-    create_package(
-        "app",
-        """load("@AvrToolchain//:helpers.bzl", "default_embedded_binaries")
+
+    if not elasticNodeMiddleware:
+        create_package(
+            "app",
+            """load("@AvrToolchain//:helpers.bzl", "default_embedded_binaries")
 load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 default_embedded_binaries(
@@ -127,9 +158,9 @@ default_embedded_binaries(
         ),
     )
 
-    create_file(
-        "app/main.c",
-        """#include <avr/io.h>
+    if not elasticNodeMiddleware:
+        create_file("app/main.c",
+            """#include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
 
@@ -153,10 +184,10 @@ main(void)
 )
 """,
     )
-
-    create_package(
-        "",
-        """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
+    if not elasticNodeMiddleware:
+        create_package(
+            "",
+            """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
 cc_library(
     name = "Library",
@@ -195,7 +226,7 @@ generate_a_unity_test_for_every_file(
         "test/first_Test.c",
         """#include "unity.h"
 
-void 
+void
 test_shouldFail(void)
 {
    TEST_FAIL();
@@ -316,9 +347,9 @@ release = 'v0.3'
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
-#	'sphinx.ext.pngmath',
-	'sphinx.ext.todo',
-	'breathe'
+#    'sphinx.ext.pngmath',
+    'sphinx.ext.todo',
+    'breathe'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -456,6 +487,10 @@ XML_OUTPUT = @@OUTPUT_DIRECTORY@@/xml
         ),
     )
     create_file("docs/index.rst", "**{}**".format(name))
+
+    if elasticNodeMiddleware:
+        create_elasticNodeMiddlewareFiles()
+        
     print(
         """
 Run
