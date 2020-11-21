@@ -107,8 +107,8 @@ def create_bazel_project(project_root):
 
         path = sys.argv[1] + "/"
         os.mkdir(path + "bitfiles")
-        path = sys.argv[1] + "/"
-        os.mkdir(path + "bitfiles")
+        # path = sys.argv[1] + "/"
+        # os.mkdir(path + "bitfiles")
 
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
