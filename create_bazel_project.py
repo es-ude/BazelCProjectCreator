@@ -9,6 +9,7 @@ elasticNodeMiddleware = False
 if len(sys.argv) >= 3 and str(sys.argv[2]) == "ElasticNodeMiddlewareProject":
     elasticNodeMiddleware = True
 
+
 def create_workspace_content(project_name, use_comm_lib=False):
     content = """workspace(
     name = "{project_name}"
@@ -19,7 +20,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 es_github_archive(
     name = "EmbeddedSystemsBuildScripts",
-    version = "1.0",
+    version = "1.0.1",
    # sha256 = "<checksum>"
 )
 
@@ -96,7 +97,6 @@ def create_bazel_project(project_root):
         build_file_path = os.path.join(path, "BUILD.bazel")
         create_file(build_file_path, build_file_content)
 
-
     def create_elasticNodeMiddlewareFiles():
         print("Creating files for an Elastic Node Middleware Project.")
         try:
@@ -105,37 +105,64 @@ def create_bazel_project(project_root):
             print("You need to install requests: pip install requests")
             exit()
 
-        path = sys.argv[1]+"/"
-        os.mkdir(path+"bitfiles")
-        path = sys.argv[1]+"/"
-        os.mkdir(path+"bitfiles")
+        path = sys.argv[1] + "/"
+        os.mkdir(path + "bitfiles")
+        path = sys.argv[1] + "/"
+        os.mkdir(path + "bitfiles")
 
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
 
-        create_file("init.py",requests.get(templates+"init.py").text)
+        create_file("init.py", requests.get(templates + "init.py").text)
         create_file("user.bazelrc", "run -- /dev/ttyACM0")
-        create_file("BUILD.bazel",requests.get(templates+"BUILD.bazel").text.replace("MyProject",name))
-        create_file("WORKSPACE",requests.get(link+"WORKSPACE").text.replace("elasticnodemiddleware",name) + 
-"""
+        create_file(
+            "BUILD.bazel",
+            requests.get(templates + "BUILD.bazel").text.replace("MyProject", name),
+        )
+        create_file(
+            "WORKSPACE",
+            requests.get(link + "WORKSPACE").text.replace("elasticnodemiddleware", name)
+            + """
 
 es_github_archive(
     name = "ElasticNodeMiddleware",
     version = "1.1"
-)""")
+)""",
+        )
 
-        create_file("app/BUILD.bazel",requests.get(templates+"appBUILD.bazel").text)
-        create_file("app/examples/BUILD.bazel",requests.get(templates+"appExamplesBUILD.bazel").text)
+        create_file("app/BUILD.bazel", requests.get(templates + "appBUILD.bazel").text)
+        create_file(
+            "app/examples/BUILD.bazel",
+            requests.get(templates + "appExamplesBUILD.bazel").text,
+        )
 
-        create_file("app/main.c",requests.get(templates+"main.c").text)
-        create_file("app/examples/blinkExample.c",requests.get(link+"app/blinkExample.c").text)
-        create_file("app/examples/blinkLufaExample.c",requests.get(link+"app/blinkLufaExample.c").text)
+        create_file("app/main.c", requests.get(templates + "main.c").text)
+        create_file(
+            "app/examples/blinkExample.c",
+            requests.get(link + "app/blinkExample.c").text,
+        )
+        create_file(
+            "app/examples/blinkLufaExample.c",
+            requests.get(link + "app/blinkLufaExample.c").text,
+        )
 
-        create_file("uploadScripts/portConfigs.py",requests.get(templates+"portConfigs.py").text)
-        create_file("uploadScripts/bitfileConfigs.py",requests.get(templates+"bitfileConfigs.py").text.replace("../bitfiles/.bit",os.path.abspath("")+"/"+name+"/bitfiles/bitfile.bit"))
-        create_file("uploadScripts/uploadBitfiles.py",requests.get(templates+"uploadBitfiles.py").text)
+        create_file(
+            "uploadScripts/portConfigs.py",
+            requests.get(templates + "portConfigs.py").text,
+        )
+        create_file(
+            "uploadScripts/bitfileConfigs.py",
+            requests.get(templates + "bitfileConfigs.py").text.replace(
+                "../bitfiles/.bit",
+                os.path.abspath("") + "/" + name + "/bitfiles/bitfile.bit",
+            ),
+        )
+        create_file(
+            "uploadScripts/uploadBitfiles.py",
+            requests.get(templates + "uploadBitfiles.py").text,
+        )
 
-    if not elasticNodeMiddleware:    
+    if not elasticNodeMiddleware:
         create_file("WORKSPACE", create_workspace_content(name))
 
     create_package(
@@ -151,7 +178,6 @@ cc_library(
 )
 """,
     )
-
 
     if not elasticNodeMiddleware:
         create_package(
@@ -169,12 +195,13 @@ default_embedded_binaries(
         ],
 )
 """.format(
-            name
-        ),
-    )
+                name
+            ),
+        )
 
     if not elasticNodeMiddleware:
-        create_file("app/main.c",
+        create_file(
+            "app/main.c",
             """#include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
@@ -189,7 +216,7 @@ main(void)
     PORTB ^= _BV(5);
   }
 }""",
-    )
+        )
     create_package(
         name,
         """cc_library(
@@ -214,9 +241,9 @@ cc_library(
     ]
 )
 """.format(
-            name
-        ),
-    )
+                name
+            ),
+        )
 
     create_file("src/.gitkeep", "")
 
@@ -505,7 +532,7 @@ XML_OUTPUT = @@OUTPUT_DIRECTORY@@/xml
 
     if elasticNodeMiddleware:
         create_elasticNodeMiddlewareFiles()
-        
+
     print(
         """
 Run
