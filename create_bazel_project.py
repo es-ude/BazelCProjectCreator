@@ -105,10 +105,7 @@ def create_bazel_project(project_root):
             print("You need to install requests: pip install requests")
             exit()
 
-        path = sys.argv[1] + "/"
-        os.mkdir(path + "bitfiles")
-        # path = sys.argv[1] + "/"
-        # os.mkdir(path + "bitfiles")
+        os.mkdir(project_root + "/bitfiles")
 
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
