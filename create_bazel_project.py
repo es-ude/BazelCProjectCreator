@@ -133,7 +133,7 @@ es_github_archive(
             requests.get(templates + "appExamplesBUILD.bazel").text,
         )
 
-        create_file("app/main.c", requests.get(templates + "main.c").text)
+        create_file("app/main.c", requests.get(link + "app/main.c").text)
         create_file(
             "app/examples/blinkExample.c",
             requests.get(link + "app/blinkExample.c").text,
