@@ -123,7 +123,7 @@ def create_bazel_project(project_root):
 
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = "1.1"
+    version = "1.11"
 )""",
         )
 
