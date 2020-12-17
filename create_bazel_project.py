@@ -74,7 +74,7 @@ es_github_archive(
 es_github_archive(
     name = "EmbeddedUtilities",
     repo = "EmbeddedUtil",
-    version = "0.3.1"
+    version = "0.3.2"
 )
 """
     return content
@@ -120,11 +120,11 @@ def create_bazel_project(project_root):
             "WORKSPACE",
             requests.get(link + "WORKSPACE").text.replace("elasticnodemiddleware", name)
             + """
-
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = "1.1"
-)""",
+    version = "1.1.1"
+)
+""",
         )
 
         create_file("app/BUILD.bazel", requests.get(templates + "appBUILD.bazel").text)
@@ -162,7 +162,8 @@ es_github_archive(
     if not elasticNodeMiddleware:
         create_file("WORKSPACE", create_workspace_content(name))
 
-    create_package(
+    if not elasticNodeMiddleware:
+        create_package(
         "app/setup",
         """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
 
@@ -171,6 +172,19 @@ cc_library(
     srcs = glob(["*.c"]),
     hdrs = glob(["*.h"]),
     deps = ["//:Library"],
+    visibility = ["//visibility:public"],
+)
+""",
+    )
+    else:
+        create_package(
+        "app/setup",
+        """load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_flag")
+
+cc_library(
+    name = "Setup",
+    srcs = glob(["*.c"]),
+    hdrs = glob(["*.h"]),
     visibility = ["//visibility:public"],
 )
 """,
@@ -244,7 +258,8 @@ cc_library(
 
     create_file("src/.gitkeep", "")
 
-    create_package(
+    if not elasticNodeMiddleware:
+    	create_package(
         "test",
         """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
 
@@ -253,6 +268,22 @@ generate_a_unity_test_for_every_file(
     file_list = glob(["*_Test.c"]),
     deps = [
         "//:Library",
+        "//{}:HdrOnlyLib",
+    ],
+)
+""".format(
+            name
+        ),
+    )
+    else:
+    	create_package(
+        "test",
+        """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
+
+generate_a_unity_test_for_every_file(
+    cexception = False,
+    file_list = glob(["*_Test.c"]),
+    deps = [
         "//{}:HdrOnlyLib",
     ],
 )
