@@ -102,7 +102,7 @@ def create_bazel_project(project_root):
         try:
             import requests
         except:
-            print("You need to install requests: pip install requests")
+            print("You need to install requests with: pip install requests (pip3 install requests)")
             exit()
 
         os.mkdir(project_root + "/bitfiles")
@@ -141,6 +141,10 @@ es_github_archive(
         create_file(
             "app/examples/blinkLufaExample.c",
             requests.get(link + "app/blinkLufaExample.c").text,
+        )
+        create_file(
+            "app/examples/monitoringExample.c",
+            requests.get(link + "app/monitoringExample.c").text,
         )
 
         create_file(
