@@ -110,7 +110,12 @@ def create_bazel_project(project_root):
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
 
-        create_file("init.py", requests.get(templates + "init.py").text)
+        create_file("init.py", requests.get(templates + "init.py").text.replace(
+            "/path/to/MyProject/",
+            os.path.abspath("") + "/" + name + "/",
+            )
+        )
+
         create_file("user.bazelrc", "run -- /dev/ttyACM0")
         create_file(
             "BUILD.bazel",
