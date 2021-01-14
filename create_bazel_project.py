@@ -102,7 +102,7 @@ def create_bazel_project(project_root):
         try:
             import requests
         except:
-            print("You need to install requests: pip install requests")
+            print("You need to install requests with: pip install requests (pip3 install requests)")
             exit()
 
         os.mkdir(project_root + "/bitfiles")
@@ -110,7 +110,12 @@ def create_bazel_project(project_root):
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
 
-        create_file("init.py", requests.get(templates + "init.py").text)
+        create_file("init.py", requests.get(templates + "init.py").text.replace(
+            "/path/to/MyProject/",
+            os.path.abspath("") + "/" + name + "/",
+            )
+        )
+
         create_file("user.bazelrc", "run -- /dev/ttyACM0")
         create_file(
             "BUILD.bazel",
@@ -141,6 +146,10 @@ es_github_archive(
         create_file(
             "app/examples/blinkLufaExample.c",
             requests.get(link + "app/blinkLufaExample.c").text,
+        )
+        create_file(
+            "app/examples/monitoringExample.c",
+            requests.get(link + "app/monitoringExample.c").text,
         )
 
         create_file(
