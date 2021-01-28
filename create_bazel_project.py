@@ -106,6 +106,7 @@ def create_bazel_project(project_root):
             exit()
 
         os.mkdir(project_root + "/bitfiles")
+        create_file("bitfiles/.gitkeep", "")
 
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
@@ -115,8 +116,10 @@ def create_bazel_project(project_root):
             os.path.abspath("") + "/" + name + "/",
             )
         )
-
-        create_file("user.bazelrc", "run -- /dev/ttyACM0")
+        create_file(
+            ".gitignore",
+            requests.get(templates + ".gitignore").text,
+        )
         create_file(
             "BUILD.bazel",
             requests.get(templates + "BUILD.bazel").text.replace("MyProject", name),
@@ -127,17 +130,15 @@ def create_bazel_project(project_root):
             + """
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = "1.1.1"
+    version = "1.2.0"
 )
 """,
         )
-
         create_file("app/BUILD.bazel", requests.get(templates + "appBUILD.bazel").text)
         create_file(
             "app/examples/BUILD.bazel",
             requests.get(templates + "appExamplesBUILD.bazel").text,
         )
-
         create_file("app/main.c", requests.get(link + "app/main.c").text)
         create_file(
             "app/examples/blinkExample.c",
@@ -150,18 +151,6 @@ es_github_archive(
         create_file(
             "app/examples/monitoringExample.c",
             requests.get(link + "app/monitoringExample.c").text,
-        )
-
-        create_file(
-            "uploadScripts/portConfigs.py",
-            requests.get(templates + "portConfigs.py").text,
-        )
-        create_file(
-            "uploadScripts/bitfileConfigs.py",
-            requests.get(templates + "bitfileConfigs.py").text.replace(
-                "../bitfiles/.bit",
-                os.path.abspath("") + "/" + name + "/bitfiles/bitfile.bit",
-            ),
         )
         create_file(
             "uploadScripts/uploadBitfiles.py",
@@ -340,7 +329,8 @@ build --incompatible_enable_cc_toolchain_resolution=true
 try-import user.bazelrc
 """,
     )
-    create_file(
+    if not elasticNodeMiddleware:
+        create_file(
         ".gitignore",
         """.vscode/
 .clwb/
