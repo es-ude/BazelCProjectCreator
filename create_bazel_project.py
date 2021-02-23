@@ -130,7 +130,7 @@ def create_bazel_project(project_root):
             + """
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = "1.2.0"
+    version = """ + '"' + requests.get("https://api.github.com/repos/es-ude/ElasticNodeMiddleware/releases/latest").json()["name"][1:] + '"' + """
 )
 """,
         )
@@ -257,7 +257,7 @@ cc_library(
     create_file("src/.gitkeep", "")
 
     if not elasticNodeMiddleware:
-    	create_package(
+        create_package(
         "test",
         """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
 
@@ -274,7 +274,7 @@ generate_a_unity_test_for_every_file(
         ),
     )
     else:
-    	create_package(
+        create_package(
         "test",
         """load("@EmbeddedSystemsBuildScripts//Unity:unity.bzl", "generate_a_unity_test_for_every_file", "unity_test")
 
