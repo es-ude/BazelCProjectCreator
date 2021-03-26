@@ -130,7 +130,7 @@ def create_bazel_project(project_root):
             + """
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = """ + '"' + requests.get("https://api.github.com/repos/es-ude/ElasticNodeMiddleware/releases/latest").json()["name"][1:] + '"' + """
+    version = """ + '"' + requests.get("https://api.github.com/repos/es-ude/ElasticNodeMiddleware/releases/latest").json()["tag_name"][1:] + '"' + """
 )
 """,
         )
