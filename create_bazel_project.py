@@ -108,7 +108,7 @@ def create_bazel_project(project_root):
         os.mkdir(project_root + "/bitfiles")
         create_file("bitfiles/.gitkeep", "")
         # TODO: change to master
-        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/issue43_tests/"
+        link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
 
         create_file("init.py", requests.get(templates + "init.py").text.replace(
