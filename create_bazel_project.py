@@ -107,7 +107,7 @@ def create_bazel_project(project_root):
 
         os.mkdir(project_root + "/bitfiles")
         create_file("bitfiles/.gitkeep", "")
-
+        # TODO: change to master
         link = "https://raw.githubusercontent.com/es-ude/ElasticNodeMiddleware/master/"
         templates = link + "templates/"
 
@@ -130,7 +130,7 @@ def create_bazel_project(project_root):
             + """
 es_github_archive(
     name = "ElasticNodeMiddleware",
-    version = """ + '"' + requests.get("https://api.github.com/repos/es-ude/ElasticNodeMiddleware/releases/latest").json()["name"][1:] + '"' + """
+    version = """ + '"' + requests.get("https://api.github.com/repos/es-ude/ElasticNodeMiddleware/releases/latest").json()["tag_name"][1:] + '"' + """
 )
 """,
         )
@@ -142,15 +142,19 @@ es_github_archive(
         create_file("app/main.c", requests.get(link + "app/main.c").text)
         create_file(
             "app/examples/blinkExample.c",
-            requests.get(link + "app/blinkExample.c").text,
+            requests.get(link + "app/examples/blinkExample.c").text,
         )
         create_file(
             "app/examples/blinkLufaExample.c",
-            requests.get(link + "app/blinkLufaExample.c").text,
+            requests.get(link + "app/examples/blinkLufaExample.c").text,
+        )
+        create_file(
+            "app/examples/blinkUartExample.c",
+            requests.get(link + "app/examples/blinkUartExample.c").text,
         )
         create_file(
             "app/examples/monitoringExample.c",
-            requests.get(link + "app/monitoringExample.c").text,
+            requests.get(link + "app/examples/monitoringExample.c").text,
         )
         create_file(
             "uploadScripts/uploadBitfiles.py",
