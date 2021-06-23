@@ -201,6 +201,8 @@ load("@AvrToolchain//platforms/cpu_frequency:cpu_frequency.bzl", "cpu_frequency_
 default_embedded_binaries(
     main_files = glob(["*.c"]),
     copts = cpu_frequency_flag(),
+#   uploader = "@AvrToolchain//:avrdude_upload_script",
+#   uploader = "@AvrToolchain//:dfu_upload_script",    
     deps = [
         "//app/setup:Setup",
         "//:Library",
