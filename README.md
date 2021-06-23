@@ -69,6 +69,12 @@ $ bazel query 'kind(platform, @AvrToolchain//platforms:*)'
 ```
 or define your own platform (see [here](https://embeddedsystemsbuildscripts.readthedocs.io/en/latest/Platforms.html))
 
+A target can be flashed by using the `bazel run` command. In order to do that, you need to append _\_upload_ to the target name. The end of the command requires a positional argument, that specifies the port of the programmer, i.e.
+```
+$ bazel run app:main_upload --platforms @AvrToolchain//platforms:ElasticNode_v4 -- /dev/ttyACM0
+```
+More information regarding that, can be found [here](https://github.com/es-ude/EmbeddedSystemsBuildScripts#AvrToolchain).
+
 ### Documentation
 To help you getting started with the documentation for your new project,
 we include setup files for [Sphinx](http://www.sphinx-doc.org/en/master/).
